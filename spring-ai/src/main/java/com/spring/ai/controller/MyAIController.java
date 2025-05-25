@@ -15,6 +15,6 @@ public class MyAIController {
 	@GetMapping("/prompt")
 	public String prompt(@RequestParam String promptMsg) {
 		System.out.println("Processed input: " + promptMsg);
-		return chatClient.prompt(promptMsg).toString();
+		return chatClient.prompt(promptMsg).call().content().toString();
 	}
 }
