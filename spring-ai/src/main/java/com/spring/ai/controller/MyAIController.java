@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MyAIController {
 	
 	@Autowired
-	ChatClient chatClient;
-
+	private ChatClient chatClient;
+	
 	@GetMapping("/prompt")
 	public String prompt(@RequestParam String promptMsg) {
 		System.out.println("Processed input: " + promptMsg);
-		return chatClient.prompt(promptMsg).call().content().toString();
+		return chatClient.prompt(promptMsg).call().content();
 	}
 }

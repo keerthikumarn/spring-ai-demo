@@ -16,21 +16,14 @@ public class AIConfig {
 	@Value("${spring.ai.openai.api-key}")
 	private String apiKey;
 
-	@Value("${spring.ai.openai.api-base-url}")
+	@Value("${spring.ai.openai.base-url}")
 	private String apiBaseUrl;
 
-	@Value("${spring.ai.openai.chat.options.model}")
+	@Value("${spring.ai.openai.chat.model}")
 	private String model;
 
-	/*@Bean
-	public OpenAiApi openAiApi(@Value("${spring.ai.openai.api-key}") String apiKey) {
-		return new OpenAiApi(apiBaseUrl, apiKey);
-	}*/
-	
 	@Bean
     public OpenAiApi openAiApi() {
-        System.out.println("🔑 Injected API Key: " + apiKey);
-        System.out.println("🌍 Injected Base URL: " + apiBaseUrl);
         return new OpenAiApi(apiBaseUrl, apiKey);
     }
 
@@ -45,10 +38,10 @@ public class AIConfig {
 		return ChatClient.builder(chatModel).build();
 	}
 
-	@PostConstruct
+	/*@PostConstruct
 	public void logConfig() {
 		System.out.println("API Key: " + apiKey);
 		System.out.println("Base URL: " + apiBaseUrl);
 		System.out.println("Model: " + model);
-	}
+	}*/
 }
