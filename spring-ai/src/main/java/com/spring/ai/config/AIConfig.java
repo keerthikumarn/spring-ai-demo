@@ -1,9 +1,11 @@
 package com.spring.ai.config;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,10 +24,18 @@ public class AIConfig {
 	@Value("${spring.ai.openai.chat.model}")
 	private String model;
 
+	@Autowired
+	private ChatModel chatModel;
+
 	@Bean
-    public OpenAiApi openAiApi() {
-        return new OpenAiApi(apiBaseUrl, apiKey);
-    }
+	public OpenAiApi openAiApi() {
+		return new OpenAiApi(apiBaseUrl, apiKey);
+	}
+
+	@Bean
+	public ChatClient chatClient() {
+		return ChatClient.builder(chatModel).build();
+	}
 
 	@Bean
 	public OpenAiChatModel openAiChatModel(OpenAiApi openAiApi) {
@@ -33,15 +43,11 @@ public class AIConfig {
 		return new OpenAiChatModel(openAiApi, options);
 	}
 
-	@Bean
-	public ChatClient chatClient(OpenAiChatModel chatModel) {
-		return ChatClient.builder(chatModel).build();
-	}
-
-	/*@PostConstruct
+	@PostConstruct
 	public void logConfig() {
 		System.out.println("API Key: " + apiKey);
 		System.out.println("Base URL: " + apiBaseUrl);
 		System.out.println("Model: " + model);
-	}*/
+	}
+
 }
