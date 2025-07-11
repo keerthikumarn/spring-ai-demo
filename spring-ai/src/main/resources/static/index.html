@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spring AI Chat</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    header {
+      background-color: #3f51b5;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+
+    .chat-area {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .input-area {
+      display: flex;
+      padding: 10px;
+      background-color: #ffffff;
+      border-top: 1px solid #ccc;
+    }
+
+    #chat-input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      resize: none;
+    }
+
+    #send-btn {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      margin-left: 10px;
+      padding: 10px 15px;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 12px 16px;
+      margin: 8px 0;
+      border-radius: 16px;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background-color: #dcf8c6;
+    }
+
+    .bot-message {
+      align-self: flex-start;
+      background-color: #ececec;
+    }
+  </style>
+</head>
+<body>
+
+<header>Spring AI Chat (Groq LLaMA 3)</header>
+
+<div class="chat-area" id="chat-area">
+  <!-- Messages will appear here -->
+</div>
+
+<div class="input-area">
+  <textarea id="chat-input" rows="1" placeholder="Type your message..."></textarea>
+  <button id="send-btn">Send</button>
+</div>
+
+<script>
+  const chatInput = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("send-btn");
+  const chatArea = document.getElementById("chat-area");
+
+  sendBtn.addEventListener("click", sendMessage);
+
+  chatInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  function sendMessage() {
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    displayMessage("user", message);
+    chatInput.value = "";
+    chatInput.rows = 1;
+
+    fetch(`http://localhost:8099/prompt?promptMsg=${encodeURIComponent(message)}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Request failed");
+        }
+        return response.text();
+      })
+      .then(responseText => {
+        displayMessage("bot", responseText);
+      })
+      .catch(err => {
+        console.error(err);
+        displayMessage("bot", "Error: Unable to get a response.");
+      });
+  }
+
+  function displayMessage(sender, message) {
+    const msgDiv = document.createElement("div");
+    msgDiv.classList.add("message");
+    msgDiv.classList.add(sender === "user" ? "user-message" : "bot-message");
+    msgDiv.textContent = message;
+    chatArea.appendChild(msgDiv);
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }
+</script>
+
+</body>
+</html>
